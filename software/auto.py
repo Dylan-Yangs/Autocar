@@ -32,11 +32,17 @@ def auto_main(args, interface):
                     color = torch.mean(color, dim=0)
                     depth = torch.tensor(images["depth"]).float() / 255
                     depth_conf = torch.tensor(images["depth_conf"]).float() / 255
+
                     x = torch.stack([color, depth, depth_conf], dim=0).unsqueeze(0).to(DEVICE)
                     pred = model(x).item()
                     print("Pred", pred)
             else:
                 pred = 0
             interface.nn_pred = pred
-
+            imuData = images["imu"]
+            imuPackets = imuData.packets
+            for imuPacket in imuPackets:
+                rotationValues = imuPacket.rotationVector
+                imuF = "{:.06f}"
+                print(f"Quaternion: i: {imuF.format(rotationValues.i)}")
             time.sleep(0.01)

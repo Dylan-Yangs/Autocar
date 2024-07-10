@@ -26,12 +26,10 @@ def create_pipeline(res):
     depth_left.out.link(depth.left)
     depth_right.out.link(depth.right)
 
-    """
-    imu = pipeline.createIMU()
+    imu = pipeline.create(depthai.node.IMU)
     imu.enableIMUSensor([depthai.IMUSensor.ROTATION_VECTOR], 10)
     imu.setBatchReportThreshold(1)
     imu.setMaxBatchReports(1)
-    """
 
     xout_rgb = pipeline.createXLinkOut()
     xout_rgb.setStreamName("rgb")
@@ -45,11 +43,11 @@ def create_pipeline(res):
     xout_depth_conf.setStreamName("depth_conf")
     depth.confidenceMap.link(xout_depth_conf.input)
 
-    """
+
     xout_imu = pipeline.createXLinkOut()
     xout_imu.setStreamName("imu")
     imu.out.link(xout_imu.input)
-    """
+
 
     return pipeline
 
@@ -62,7 +60,7 @@ class PipelineWrapper:
     def __init__(self, device):
         self.device = device
         self.queues = {}
-        for name in ["rgb", "depth", "depth_conf"]:
+        for name in ["rgb", "depth", "depth_conf", "imu"]:
             self.queues[name] = self.device.getOutputQueue(name)
 
     def get(self):
@@ -71,6 +69,7 @@ class PipelineWrapper:
             "depth": crop_resize(read_latest(self.queues["depth"]).getFrame()),
             "depth_conf": crop_resize(read_latest(self.queues["depth_conf"]).getFrame()),
         }
+            "imu": read_latest(self.queues["imu"])
 
 
 def crop_resize(img):
