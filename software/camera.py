@@ -68,8 +68,8 @@ class PipelineWrapper:
             "rgb": read_latest(self.queues["rgb"]).getCvFrame(),
             "depth": crop_resize(read_latest(self.queues["depth"]).getFrame()),
             "depth_conf": crop_resize(read_latest(self.queues["depth_conf"]).getFrame()),
+            "imu": read_latest(self.queues["imu"]) 
         }
-            "imu": read_latest(self.queues["imu"])
 
 
 def crop_resize(img):
